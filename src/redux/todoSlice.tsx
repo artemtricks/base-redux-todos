@@ -27,7 +27,7 @@ export const fetchTodos = createAsyncThunk<Todo, void>(
   }
 );
 
-export const removeTodos = createAsyncThunk(
+export const removeTodos = createAsyncThunk<void, Pick<Todo, "id">>(
   "todo/removeTodos",
   async (id, { getState }) => {
     try {
@@ -41,15 +41,20 @@ export const removeTodos = createAsyncThunk(
   }
 );
 
-export const toggleTodos = createAsyncThunk<any, any>(
+export const toggleTodos = createAsyncThunk<Todo[], Pick<Todo, "id">>(
   "todo/toggleTodos",
   async (id, { getState }) => {
     const state = getState();
     const todo = state.todo.todo.find((item) => item.id === id);
     try {
-      await axios.patch(`https://f23fd5b7a0ad1362.mokky.dev/todo/${id}`, {
-        complited: !todo.complited,
-      });
+      const response = await axios.patch(
+        `https://f23fd5b7a0ad1362.mokky.dev/todo/${id}`,
+        {
+          complited: !todo.complited,
+        }
+      );
+
+      return response.data;
     } catch (err) {
       console.log(err);
     }
@@ -80,9 +85,9 @@ export const todoeSlice = createSlice({
   name: "todoSlice",
   initialState,
   reducers: {
-    addTodo(state, actions) {
-      state.todo = actions.payload;
-    },
+    // addTodo(state, actions) {
+    //   state.todo = actions.payload;
+    // },
   },
   extraReducers: (builder) => {
     //fetch todos
